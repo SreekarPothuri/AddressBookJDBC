@@ -70,8 +70,14 @@ public class AddressBookService {
 		return null;
 	}
 
-	public void addContactToAddressBook(int id, String fname, String lname, Date date,
-			String addressType, String address, String City, String State, long zip, String mobileNum, String email) throws AddressBookException {
-		 addressBookList.add(addressBookDBService.addNewContactToAddressBook(id,fname,lname,date,addressType,address,City,State,zip,mobileNum,email));
+	public void addContactToAddressBook(int id, String fname, String lname, Date date, String addressType,
+			String address, String City, String State, long zip, String mobileNum, String email)
+			throws AddressBookException {
+		addressBookList.add(addressBookDBService.addNewContactToAddressBook(id, fname, lname, date, addressType,
+				address, City, State, zip, mobileNum, email));
+	}
+	
+	public void addMultipleContactsToDBUsingThreads(List<AddressBookData> record) {
+		addressBookDBService.addMultipleContactsToDBUsingThreads(record);
 	}
 }
