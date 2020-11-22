@@ -1,5 +1,6 @@
 package com.blz.addressBook;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class AddressBookService {
@@ -38,12 +39,20 @@ public class AddressBookService {
 	}
 
 	public void updateContactCityAndState(String name, String city, String state) throws AddressBookException {
-			int result = addressBookDBService.updateContactData(name, city, state);
-			if(result == 0) return;
-			AddressBookData addressBookData = this.getAddressBookData(name);
-			if (addressBookData != null) {
-				addressBookData.city = city;
-				addressBookData.state = state;
-			}
+		int result = addressBookDBService.updateContactData(name, city, state);
+		if (result == 0)
+			return;
+		AddressBookData addressBookData = this.getAddressBookData(name);
+		if (addressBookData != null) {
+			addressBookData.city = city;
+			addressBookData.state = state;
+		}
+	}
+
+	public List<AddressBookData> readAddressBookForDateRange(IOService ioService, LocalDate startDate,
+			LocalDate endDate) throws AddressBookException {
+		if (ioService.equals(IOService.DB_IO))
+			return addressBookDBService.getContactForDateRange(startDate, endDate);
+		return null;
 	}
 }

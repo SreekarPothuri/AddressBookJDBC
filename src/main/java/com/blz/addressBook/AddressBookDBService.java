@@ -1,10 +1,12 @@
 package com.blz.addressBook;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,5 +100,12 @@ public class AddressBookDBService {
 		} catch (SQLException e) {
 			throw new AddressBookException(e.getMessage(), AddressBookException.ExceptionType.DATABASE_EXCEPTION);
 		}
+	}
+
+	public List<AddressBookData> getContactForDateRange(LocalDate startDate, LocalDate endDate)
+			throws AddressBookException {
+		String sql = String.format("SELECT * FROM addressBook WHERE Date_added BETWEEN '%s' AND '%s';",
+				Date.valueOf(startDate), Date.valueOf(endDate));
+		return this.getAddressBookDataUsingDB(sql);
 	}
 }
