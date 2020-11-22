@@ -8,7 +8,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AddressBookDBService {
 
@@ -107,5 +109,20 @@ public class AddressBookDBService {
 		String sql = String.format("SELECT * FROM addressBook WHERE Date_added BETWEEN '%s' AND '%s';",
 				Date.valueOf(startDate), Date.valueOf(endDate));
 		return this.getAddressBookDataUsingDB(sql);
+	}
+
+	public Map<String, Integer> getCountContactsByCityOrState(String column) throws AddressBookException {
+		Map<String, Integer> contactsCount = new HashMap<>();
+		String query = String.format("SELECT %s , count(%s) FROM addressBook GROUP BY %s;", column, column, column);
+		try (Connection con = AddressBookConnection.getConnection()) {
+			PreparedStatement preparedStatement = con.prepareStatement(query);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()) {
+				contactsCount.put(resultSet.getString(1), resultSet.getInt(2));
+			}
+		} catch (Exception e) {
+			throw new AddressBookException("SQL Exception", AddressBookException.ExceptionType.DATABASE_EXCEPTION);
+		}
+		return contactsCount;
 	}
 }
