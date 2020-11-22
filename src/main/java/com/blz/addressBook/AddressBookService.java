@@ -1,5 +1,6 @@
 package com.blz.addressBook;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -28,15 +29,15 @@ public class AddressBookService {
 		return this.addressBookList;
 	}
 
-	private AddressBookData getAddressBookData(String firstName) {
+	private AddressBookData getAddressBookData(String FirstName) {
 		return this.addressBookList.stream()
-				.filter(addressBookDataItem -> addressBookDataItem.firstName.equals(firstName)).findFirst()
+				.filter(addressBookDataItem -> addressBookDataItem.getFirstName().equals(FirstName)).findFirst()
 				.orElse(null);
 	}
 
-	public boolean checkAddressBookInSyncWithDB(String firstName) throws AddressBookException {
-		List<AddressBookData> addressBookDataList = addressBookDBService.getAddressBookData(firstName);
-		return addressBookDataList.get(0).equals(getAddressBookData(firstName));
+	public boolean checkAddressBookInSyncWithDB(String FirstName) throws AddressBookException {
+		List<AddressBookData> addressBookDataList = addressBookDBService.getAddressBookData(FirstName);
+		return addressBookDataList.get(0).equals(getAddressBookData(FirstName));
 	}
 
 	public void updateContactCityAndState(String name, String city, String state) throws AddressBookException {
@@ -67,5 +68,10 @@ public class AddressBookService {
 		if (ioService.equals(IOService.DB_IO))
 			return addressBookDBService.getCountContactsByCityOrState(city);
 		return null;
+	}
+
+	public void addContactToAddressBook(int id, String fname, String lname, Date date,
+			String addressType, String address, String City, String State, long zip, String mobileNum, String email) throws AddressBookException {
+		 addressBookList.add(addressBookDBService.addNewContactToAddressBook(id,fname,lname,date,addressType,address,City,State,zip,mobileNum,email));
 	}
 }
