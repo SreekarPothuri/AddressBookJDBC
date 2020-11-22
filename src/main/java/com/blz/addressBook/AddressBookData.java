@@ -1,5 +1,8 @@
 package com.blz.addressBook;
 
+import java.sql.Date;
+import java.time.LocalDate;
+
 public class AddressBookData {
 	private int id;
 	public String firstName;
@@ -11,6 +14,7 @@ public class AddressBookData {
 	private String mobileNum;
 	private long zipCode;
 	private String addressType;
+	private Date date;
 
 	public AddressBookData(int id, String firstName, String lastName, String addressType, String address, String city,
 			String state, long zipCode, String mobileNum, String emailId) {
@@ -24,6 +28,12 @@ public class AddressBookData {
 		this.zipCode = zipCode;
 		this.mobileNum = mobileNum;
 		this.emailId = emailId;
+	}
+
+	public AddressBookData(int id, String firstName, String lastName, Date date, String addressType,
+			String address, String city, String state, long zipCode, String mobileNum, String emailId) {
+		this(id, firstName, lastName, addressType, address, city, state, zipCode, mobileNum, emailId);
+		this.date = date;
 	}
 
 	public int getId() {
