@@ -1,8 +1,8 @@
 package com.blz.addressBook;
 
 import java.sql.Date;
-import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,9 +68,28 @@ public class AddressBookServiceTest {
 	@Test
 	public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() throws AddressBookException {
 		addressBookService.readAddressBookData(IOService.DB_IO);
-		addressBookService.addContactToAddressBook(4, "Anudeep", "Betha", Date.valueOf("2020-05-12"), "Office",
+		addressBookService.addContactToAddressBook(4,"Anudeep", "Betha", Date.valueOf("2020-05-12"), "Office",
 				"Electronic City", "Bangalore", "Karnataka", 536429, "8796589899", "deepu123@gmail.com");
 		boolean result = addressBookService.checkAddressBookInSyncWithDB("Anudeep");
 		Assert.assertTrue(result);
+	}
+	
+	@Test
+	public void givenMultipleContact_WhenAdded_ShouldSyncWithDB() throws AddressBookException {
+		AddressBookData[] contactArray = {
+								new AddressBookData(5,"Latha","Pothuri",Date.valueOf("2020-06-12"),"Home","VidyaNagar",
+										"Ponnur","AndhraPradesh",887622,"8465216975", "latha@gmail.com"),
+								new AddressBookData(6,"Sandeep","Vanga",Date.valueOf("2019-06-22"),"Office","gandhiNagar","Vijayawada",
+										"AndhraPradesh",882002,"9976549999","pm@gmail.com"),
+								new AddressBookData(7,"Gaurav","Khede",Date.valueOf("2018-08-02"),"Home","Dumka","Kolkata",
+										"WestBengal", 820056,"9648515621","rkboi@yahoo.com")
+		};
+		addressBookService.addMultipleContactsToDBUsingThreads(Arrays.asList(contactArray));
+		boolean isSynced1 = addressBookService.checkAddressBookInSyncWithDB("Latha");
+		boolean isSynced2 = addressBookService.checkAddressBookInSyncWithDB("Sandeep");
+		boolean isSynced3 = addressBookService.checkAddressBookInSyncWithDB("Gaurav");
+		Assert.assertTrue(isSynced1);
+		Assert.assertTrue(isSynced2);
+		Assert.assertTrue(isSynced3);
 	}
 }
