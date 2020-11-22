@@ -1,7 +1,9 @@
 package com.blz.addressBook;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -12,10 +14,12 @@ import com.blz.addressBook.AddressBookService.IOService;
 public class AddressBookServiceTest {
 
 	static AddressBookService addressBookService;
+	static Map<String, Integer> count;
 
 	@BeforeClass
 	public static void AddressBookServiceObj() {
 		addressBookService = new AddressBookService();
+		count = new HashMap<>();
 	}
 
 	@Test
@@ -39,5 +43,23 @@ public class AddressBookServiceTest {
 		List<AddressBookData> employeePayrollData = addressBookService.readAddressBookForDateRange(IOService.DB_IO,
 				startDate, endDate);
 		Assert.assertEquals(3, employeePayrollData.size());
+	}
+
+	@Test
+	public void givenAddressBookDB_WhenRetrievedCountByState_ShouldReturnCountGroupedByState()
+			throws AddressBookException {
+		count = addressBookService.countContactsByState(IOService.DB_IO, "State");
+		Assert.assertEquals(1, count.get("AndhraPradesh"), 0);
+		Assert.assertEquals(1, count.get("Telangana"), 0);
+		Assert.assertEquals(1, count.get("Karnataka"), 0);
+	}
+
+	@Test
+	public void givenAddressBookDB_WhenRetrievedCountByCity_ShouldReturnCountGroupedByCity()
+			throws AddressBookException {
+		count = addressBookService.countContactsByCity(IOService.DB_IO, "City");
+		Assert.assertEquals(1, count.get("Ponnur"), 0);
+		Assert.assertEquals(1, count.get("Mysore"), 0);
+		Assert.assertEquals(1, count.get("Hyderabad"), 0);
 	}
 }
