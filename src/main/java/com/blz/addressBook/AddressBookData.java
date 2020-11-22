@@ -2,12 +2,12 @@ package com.blz.addressBook;
 
 public class AddressBookData {
 	private int id;
-	private String firstName;
+	public String firstName;
 	private String lastName;
 	private String emailId;
 	private String address;
-	private String city;
-	private String state;
+	public String city;
+	public String state;
 	private String mobileNum;
 	private long zipCode;
 	private String addressType;

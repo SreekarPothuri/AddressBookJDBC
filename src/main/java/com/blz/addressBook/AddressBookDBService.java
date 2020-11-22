@@ -1,6 +1,7 @@
 package com.blz.addressBook;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -10,6 +11,7 @@ import java.util.List;
 public class AddressBookDBService {
 
 	private static AddressBookDBService addressBookDBService;
+	private PreparedStatement addressBookDataStatement;
 
 	private AddressBookDBService() {
 	}
@@ -26,15 +28,15 @@ public class AddressBookDBService {
 	}
 
 	private List<AddressBookData> getAddressBookDataUsingDB(String sql) throws AddressBookException {
-		List<AddressBookData> employeePayrollList = new ArrayList<>();
+		List<AddressBookData> addressBookList = new ArrayList<>();
 		try (Connection connection = AddressBookConnection.getConnection();) {
 			Statement statement = connection.createStatement();
 			ResultSet resultSet = statement.executeQuery(sql);
-			employeePayrollList = this.getAddressBookData(resultSet);
+			addressBookList = this.getAddressBookData(resultSet);
 		} catch (SQLException e) {
 			throw new AddressBookException(e.getMessage(), AddressBookException.ExceptionType.DATABASE_EXCEPTION);
 		}
-		return employeePayrollList;
+		return addressBookList;
 	}
 
 	private List<AddressBookData> getAddressBookData(ResultSet resultSet) throws AddressBookException {
@@ -42,8 +44,8 @@ public class AddressBookDBService {
 		try {
 			while (resultSet.next()) {
 				int id = resultSet.getInt("Id");
-				String firstName = resultSet.getString("Firstname");
-				String lastName = resultSet.getString("Lastname");
+				String firstName = resultSet.getString("FirstName");
+				String lastName = resultSet.getString("LastName");
 				String addressType = resultSet.getString("AddressType");
 				String address = resultSet.getString("Address");
 				String city = resultSet.getString("City");
@@ -60,4 +62,41 @@ public class AddressBookDBService {
 		return addressBookList;
 	}
 
+	public List<AddressBookData> getAddressBookData(String firstName) throws AddressBookException {
+		List<AddressBookData> addressBookList = null;
+		if (this.addressBookDataStatement == null)
+			this.prepareStatementForContactData();
+		try {
+			addressBookDataStatement.setString(1, firstName);
+			ResultSet resultSet = addressBookDataStatement.executeQuery();
+			addressBookList = this.getAddressBookData(resultSet);
+		} catch (SQLException e) {
+			throw new AddressBookException(e.getMessage(), AddressBookException.ExceptionType.DATABASE_EXCEPTION);
+		}
+		return addressBookList;
+	}
+
+	private void prepareStatementForContactData() throws AddressBookException {
+		try {
+			Connection connection = AddressBookConnection.getConnection();
+			String sql = "SELECT * FROM addressBook WHERE FirstName = ?";
+			addressBookDataStatement = connection.prepareStatement(sql);
+		} catch (SQLException e) {
+			throw new AddressBookException(e.getMessage(), AddressBookException.ExceptionType.DATABASE_EXCEPTION);
+		}
+	}
+
+	public int updateContactData(String name, String city, String state) throws AddressBookException {
+		try (Connection connection = AddressBookConnection.getConnection();) {
+			String sql = "UPDATE addressBook SET City = ?, State = ? WHERE FirstName = ?";
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setString(1, city);
+			preparedStatement.setString(2, state);
+			preparedStatement.setString(3, name);
+			int status = preparedStatement.executeUpdate();
+			return status;
+		} catch (SQLException e) {
+			throw new AddressBookException(e.getMessage(), AddressBookException.ExceptionType.DATABASE_EXCEPTION);
+		}
+	}
 }
