@@ -30,8 +30,8 @@ public class AddressBookData {
 		this.emailId = emailId;
 	}
 
-	public AddressBookData(int id, String firstName, String lastName, Date date, String addressType,
-			String address, String city, String state, long zipCode, String mobileNum, String emailId) {
+	public AddressBookData(int id, String firstName, String lastName, Date date, String addressType, String address,
+			String city, String state, long zipCode, String mobileNum, String emailId) {
 		this(id, firstName, lastName, addressType, address, city, state, zipCode, mobileNum, emailId);
 		this.date = date;
 	}

@@ -59,8 +59,8 @@ public class AddressBookDBService {
 				long zipCode = resultSet.getLong("ZipCode");
 				String mobileNumber = resultSet.getString("MobileNumber");
 				String emailId = resultSet.getString("EmailId");
-				addressBookList.add(new AddressBookData(id, firstName, lastName, date, addressType, address, city, state,
-						zipCode, mobileNumber, emailId));
+				addressBookList.add(new AddressBookData(id, firstName, lastName, date, addressType, address, city,
+						state, zipCode, mobileNumber, emailId));
 			}
 		} catch (SQLException e) {
 			throw new AddressBookException(e.getMessage(), AddressBookException.ExceptionType.DATABASE_EXCEPTION);
@@ -128,13 +128,14 @@ public class AddressBookDBService {
 		return contactsCount;
 	}
 
-	public AddressBookData addNewContactToAddressBook(int id, String fname, String lname, Date date,
-			String addressType, String address, String city, String state, long zip, String mobileNum, String email)
+	public AddressBookData addNewContactToAddressBook(int id, String fname, String lname, Date date, String addressType,
+			String address, String city, String state, long zip, String mobileNum, String email)
 			throws AddressBookException {
 		AddressBookData addressBookData = null;
-		String sql = String.format("INSERT INTO addressBook(Id,FirstName,LastName,Date_added,AddressType,Address,City,State,Zipcode,MobileNumber,EmailId)"
-										+ " VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');",
-										id, fname, lname, date, addressType, address, city, state, zip, mobileNum, email);
+		String sql = String.format(
+				"INSERT INTO addressBook(Id,FirstName,LastName,Date_added,AddressType,Address,City,State,Zipcode,MobileNumber,EmailId)"
+						+ " VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');",
+				id, fname, lname, date, addressType, address, city, state, zip, mobileNum, email);
 		try (Connection connection = AddressBookConnection.getConnection()) {
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			int result = preparedStatement.executeUpdate();
@@ -146,30 +147,37 @@ public class AddressBookDBService {
 		}
 		return addressBookData;
 	}
-	
+
 	public void addMultipleContactsToDBUsingThreads(List<AddressBookData> record) {
-		Map<Integer,Boolean> addStatus = new HashMap<>();
-		for(AddressBookData contact:record) {
-			Runnable task = ()->{
-				addStatus.put(contact.hashCode(),false);
+		Map<Integer, Boolean> addStatus = new HashMap<>();
+		for (AddressBookData contact : record) {
+			Runnable task = () -> {
+				addStatus.put(contact.hashCode(), false);
 				try {
-					addNewContactToAddressBook(contact.getId(),contact.getFirstName(),contact.getLastName(),contact.getDate(),contact.getAddressType(),
-							contact.getAddress(),contact.getCity(), contact.getState(), contact.getZipCode(),
-							contact.getMobileNum(), contact.getEmailId());
+					addNewContactToAddressBook(contact.getId(), contact.getFirstName(), contact.getLastName(),
+							contact.getDate(), contact.getAddressType(), contact.getAddress(), contact.getCity(),
+							contact.getState(), contact.getZipCode(), contact.getMobileNum(), contact.getEmailId());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				addStatus.put(contact.hashCode(),true);
+				addStatus.put(contact.hashCode(), true);
 			};
-			Thread thread=new Thread(task,contact.getFirstName());
+			Thread thread = new Thread(task, contact.getFirstName());
 			thread.start();
 		}
-		while(addStatus.containsValue(false)) {
+		while (addStatus.containsValue(false)) {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+
+	public void addNewContactsUsingRestAPI(List<AddressBookData> contactList) throws AddressBookException {
+		for (AddressBookData c : contactList) {
+			addNewContactToAddressBook(c.getId(), c.getFirstName(), c.getLastName(), c.getDate(), c.getAddressType(),
+					c.getAddress(), c.getCity(), c.getState(), c.getZipCode(), c.getMobileNum(), c.getEmailId());
 		}
 	}
 }

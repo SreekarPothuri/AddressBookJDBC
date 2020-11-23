@@ -76,8 +76,16 @@ public class AddressBookService {
 		addressBookList.add(addressBookDBService.addNewContactToAddressBook(id, fname, lname, date, addressType,
 				address, City, State, zip, mobileNum, email));
 	}
-	
+
 	public void addMultipleContactsToDBUsingThreads(List<AddressBookData> record) {
 		addressBookDBService.addMultipleContactsToDBUsingThreads(record);
+	}
+
+	public void addNewContactsUsingRestAPI(List<AddressBookData> contactList) throws AddressBookException {
+		addressBookDBService.addNewContactsUsingRestAPI(contactList);
+	}
+
+	public int entryCount() throws AddressBookException {
+		return addressBookDBService.readData().size();
 	}
 }
